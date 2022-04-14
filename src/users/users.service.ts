@@ -1,23 +1,30 @@
 import mongoose from 'mongoose';
 import { Model } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDoc } from './entities/user.entity';
+import * as Bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDoc>) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    console.log(createUserDto);
-    const createdUser = await this.userModel.create(createUserDto);
-    return createdUser.save();
+    try {
+      const salt = Bcrypt.genSaltSync(12);
+      const hash = Bcrypt.hashSync(createUserDto.password, salt);
+      createUserDto.password = hash;
+      const createdUser = await this.userModel.create(createUserDto);
+      return createdUser.save();
+    } catch (err) {
+      throw new HttpException('Username Already Exists', HttpStatus.CONFLICT);
+    }
   }
 
   async findAll(): Promise<User[]> {
-    return await this.userModel.find().exec();
+    return await this.userModel.find().select('-_id').exec();
   }
 
   async findOne(id: string): Promise<User[]> {
