@@ -24,12 +24,12 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return await this.userModel.find().select('-_id').exec();
+    return await this.userModel.find().select('-_id -password').exec();
   }
 
   async findOne(id: string): Promise<User[]> {
     const query: any = { _id: new mongoose.Types.ObjectId(id) };
-    return await this.userModel.find(query).exec();
+    return await this.userModel.find(query).select('-password').exec();
   }
   async update(id: string, updateUserDto: UpdateUserDto) {
     try {
