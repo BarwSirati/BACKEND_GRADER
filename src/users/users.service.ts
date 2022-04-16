@@ -27,14 +27,15 @@ export class UsersService {
     return await this.userModel.find().select('-_id -password').exec();
   }
 
-  async findOne(id: string): Promise<User[]> {
-    const query: any = { _id: new mongoose.Types.ObjectId(id) };
-    return await this.userModel.find(query).select('-password').exec();
+  async findOne(username: string): Promise<User[]> {
+    const query: any = { username: username };
+    return await this.userModel.find(query).select('-_id -password').exec();
   }
-  async update(id: string, updateUserDto: UpdateUserDto) {
+
+  async update(username: string, updateUserDto: UpdateUserDto) {
     try {
-      if (await this.findOne(id)) {
-        const query: any = { _id: new mongoose.Types.ObjectId(id) };
+      if (await this.findOne(username)) {
+        const query: any = { username: username };
         return await this.userModel
           .findByIdAndUpdate(query, updateUserDto)
           .exec();
@@ -42,8 +43,8 @@ export class UsersService {
     } catch (err) {}
   }
 
-  async remove(id: string) {
-    const query: any = { _id: new mongoose.Types.ObjectId(id) };
+  async remove(username: string) {
+    const query: any = { username: username };
     return await this.userModel.findByIdAndRemove(query).exec();
   }
 }

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -26,18 +27,21 @@ export class UsersController {
     return await this.usersService.findAll();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<User[]> {
-    return await this.usersService.findOne(id);
+  @Get(':username')
+  async findOne(@Param('username') username: string): Promise<User[]> {
+    return await this.usersService.findOne(username);
   }
 
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return await this.usersService.update(id, updateUserDto);
+  @Patch(':username')
+  async update(
+    @Param('username') username: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return await this.usersService.update(username, updateUserDto);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return await this.usersService.remove(id);
+  @Delete(':username')
+  async remove(@Param('username') username: string) {
+    return await this.usersService.remove(username);
   }
 }
