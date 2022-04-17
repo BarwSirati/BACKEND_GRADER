@@ -11,6 +11,7 @@ import { CreateLoginDto } from './dto/create-login.dto';
 import { Model } from 'mongoose';
 import * as Bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -57,12 +58,19 @@ export class AuthService {
       sub: userId,
       username: username,
     };
-    const token = await this.jwt.signAsync(payload, {
-      expiresIn: '7d',
-      secret: process.env.SECRET_KEY,
-    });
+    const token = await Promise.all([
+      this.jwt.signAsync(payload, {
+        expiresIn: 60 * 60 * 24 * 7,
+        secret: process.env.SECRET_KEY,
+      }),
+    ]);
     return {
       access_token: token,
     };
+  }
+
+  async logout(res: Response): Promise<any> {
+    res.clearCookie('jwt');
+    throw new HttpException('success', HttpStatus.OK);
   }
 }
