@@ -11,31 +11,22 @@ import * as Bcrypt from 'bcryptjs';
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDoc>) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    try {
-      const salt = Bcrypt.genSaltSync(12);
-      const hash = Bcrypt.hashSync(createUserDto.password, salt);
-      createUserDto.password = hash;
-      const createdUser = await this.userModel.create(createUserDto);
-      return createdUser.save();
-    } catch (err) {
-      throw new HttpException('Username Already Exists', HttpStatus.CONFLICT);
-    }
-  }
-
   async findAll(): Promise<User[]> {
-    return await this.userModel.find().select('-_id -password').exec();
+    return await this.userModel
+      .find()
+      .select('-_id -password -username')
+      .exec();
   }
 
-  async findOne(username: string): Promise<User[]> {
-    const query: any = { username: username };
+  async findOne(id: string): Promise<User[]> {
+    const query: any = { _id: id };
     return await this.userModel.find(query).select('-_id -password').exec();
   }
 
-  async update(username: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     try {
-      if (await this.findOne(username)) {
-        const query: any = { username: username };
+      if (await this.findOne(id)) {
+        const query: any = { _id: id };
         return await this.userModel
           .findByIdAndUpdate(query, updateUserDto)
           .exec();
@@ -43,8 +34,8 @@ export class UsersService {
     } catch (err) {}
   }
 
-  async remove(username: string) {
-    const query: any = { username: username };
+  async remove(id: string) {
+    const query: any = { _id: id };
     return await this.userModel.findByIdAndRemove(query).exec();
   }
 }

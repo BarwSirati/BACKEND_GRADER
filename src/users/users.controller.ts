@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
@@ -9,39 +8,37 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-
+import { JwtGuard } from 'src/auth/guard/jwt.guard';
+import { GetUser } from 'src/auth/decorator/get-user.decorator';
+@UseGuards(JwtGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    return await this.usersService.create(createUserDto);
-  }
 
   @Get()
   async findAll(): Promise<User[]> {
     return await this.usersService.findAll();
   }
 
-  @Get(':username')
-  async findOne(@Param('username') username: string): Promise<User[]> {
-    return await this.usersService.findOne(username);
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<User[]> {
+    return await this.usersService.findOne(id);
   }
 
-  @Patch(':username')
-  async update(
-    @Param('username') username: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    return await this.usersService.update(username, updateUserDto);
+  @Get('/current/info')
+  async getCurrent(@GetUser() user: User) {
+    return user;
   }
 
-  @Delete(':username')
-  async remove(@Param('username') username: string) {
-    return await this.usersService.remove(username);
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return await this.usersService.update(id, updateUserDto);
+  }
+
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    return await this.usersService.remove(id);
   }
 }
