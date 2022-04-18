@@ -1,11 +1,8 @@
-import mongoose from 'mongoose';
 import { Model } from 'mongoose';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDoc } from './entities/user.entity';
-import * as Bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
