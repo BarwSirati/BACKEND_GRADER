@@ -8,8 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { UsersController } from './users/users.controller';
 import { AuthModule } from './auth/auth.module';
-import { AuthService } from './auth/auth.service';
-import { AuthController } from './auth/auth.controller';
+import { SubmittedModule } from './submitted/submitted.module';
 import configuration from './config/configuration';
 @Module({
   imports: [
@@ -21,6 +20,7 @@ import configuration from './config/configuration';
     UsersModule,
     QuestionModule,
     AuthModule,
+    SubmittedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
