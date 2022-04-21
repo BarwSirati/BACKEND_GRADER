@@ -1,9 +1,17 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UseGuards,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateSubmittedDto } from './dto/create-submitted.dto';
 import { SubmitDoc, Submitted } from './entities/submitted.entity';
 import { Model } from 'mongoose';
 import { UsersService } from 'src/users/users.service';
+import { JwtGuard } from 'src/auth/guard/jwt.guard';
+
+@UseGuards(JwtGuard)
 @Injectable()
 export class SubmittedService {
   constructor(
@@ -30,10 +38,8 @@ export class SubmittedService {
             createSubmitted.userId,
           );
           const newScore: number = queryScore.score + createSubmitted.score;
-          return await this.userService.updateScore(
-            createSubmitted.userId,
-            newScore,
-          );
+          await this.userService.updateScore(createSubmitted.userId, newScore);
+          return new HttpException('Success', HttpStatus.OK);
         }
       }
     } catch (err) {
