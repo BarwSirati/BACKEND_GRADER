@@ -17,7 +17,7 @@ export class UsersService {
 
   async findOne(id: string): Promise<User[]> {
     try {
-      const query: any = { _id: id };
+      const query: object = { _id: id };
       if (query) {
         return await this.userModel.find(query).select('-_id -password').exec();
       }
@@ -28,19 +28,19 @@ export class UsersService {
   }
 
   async getScore(id: string): Promise<any> {
-    const query: any = { _id: id };
+    const query: object = { _id: id };
     return await this.userModel.findOne(query).select('score -_id').exec();
   }
 
   async getFinish(id: string): Promise<any> {
-    const query: any = { _id: id };
+    const query: object = { _id: id };
     return await this.userModel.findOne(query).select('finished -_id').exec();
   }
 
   async updateScore(id: string, score: number) {
     try {
       if (await this.findOne(id)) {
-        const query: any = { _id: id };
+        const query: object = { _id: id };
         const queryFinished = await this.getFinish(id);
         const finished = queryFinished.finished + 1;
         return await this.userModel.updateMany(query, {
@@ -56,7 +56,7 @@ export class UsersService {
   async update(id: string, updateUserDto: UpdateUserDto) {
     try {
       if (await this.findOne(id)) {
-        const query: any = { _id: id };
+        const query: object = { _id: id };
         return await this.userModel
           .findByIdAndUpdate(query, updateUserDto)
           .exec();
@@ -67,7 +67,7 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    const query: any = { _id: id };
+    const query: object = { _id: id };
     return await this.userModel.findByIdAndRemove(query).exec();
   }
 }

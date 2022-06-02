@@ -22,23 +22,25 @@ export class QuestionService {
   }
 
   async findOne(id: string) {
-    const query: any = { _id: new mongoose.Types.ObjectId(id) };
+    const query: object = { _id: new mongoose.Types.ObjectId(id) };
     return await this.quesModel.find(query).exec();
   }
 
   async update(id: string, updateQuestionDto: UpdateQuestionDto) {
     try {
       if (await this.findOne(id)) {
-        const query: any = { _id: new mongoose.Types.ObjectId(id) };
+        const query: object = { _id: id };
         return await this.quesModel
           .findByIdAndUpdate(query, updateQuestionDto)
           .exec();
       }
-    } catch (err) {}
+    } catch (err) {
+      console.log(err.code);
+    }
   }
 
   async remove(id: string) {
-    const query: any = { _id: new mongoose.Types.ObjectId(id) };
+    const query: object = { _id: new mongoose.Types.ObjectId(id) };
     return await this.quesModel.findByIdAndRemove(query).exec();
   }
 }

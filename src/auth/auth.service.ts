@@ -11,7 +11,6 @@ import { CreateLoginDto } from './dto/create-login.dto';
 import { Model } from 'mongoose';
 import * as Bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +18,7 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<UserDoc>,
     private jwt: JwtService,
   ) {}
-  async login(createLoginDto: CreateLoginDto): Promise<any> {
+  async userLogin(createLoginDto: CreateLoginDto): Promise<JsonWebKey> {
     const user: any = await this.userModel
       .findOne({
         username: createLoginDto.username,
@@ -39,7 +38,7 @@ export class AuthService {
     return this.signToken(user._id, user.username);
   }
 
-  async register(createUser: CreateUserDto): Promise<any> {
+  async userRegister(createUser: CreateUserDto): Promise<User> {
     try {
       const salt = Bcrypt.genSaltSync(12);
       const hash = Bcrypt.hashSync(createUser.password, salt);
@@ -53,7 +52,7 @@ export class AuthService {
     }
   }
 
-  async signToken(userId: string, username: string): Promise<any> {
+  async signToken(userId: string, username: string): Promise<object> {
     const payload = {
       sub: userId,
       username: username,
@@ -67,10 +66,5 @@ export class AuthService {
     return {
       access_token: token,
     };
-  }
-
-  async logout(res: Response): Promise<any> {
-    res.clearCookie('jwt');
-    throw new HttpException('success', HttpStatus.OK);
   }
 }
