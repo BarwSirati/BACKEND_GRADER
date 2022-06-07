@@ -23,8 +23,5 @@ export class Submitted {
 
   @Prop()
   createdAt: Date;
-
-  @Prop()
-  updatedAt: Date;
 }
 export const SubmitSchema = SchemaFactory.createForClass(Submitted);

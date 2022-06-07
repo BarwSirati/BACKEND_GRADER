@@ -9,6 +9,7 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
 import { UsersController } from './users/users.controller';
 import { AuthModule } from './auth/auth.module';
 import { SubmittedModule } from './submitted/submitted.module';
+import { MemberModule } from './member/member.module';
 import configuration from './config/configuration';
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import configuration from './config/configuration';
     QuestionModule,
     AuthModule,
     SubmittedModule,
+    MemberModule,
   ],
   controllers: [AppController],
   providers: [AppService],
