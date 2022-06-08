@@ -24,10 +24,7 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return await this.userModel
-      .find()
-      .select('-_id -password -username')
-      .exec();
+    return await this.userModel.find().select('-_id -password').exec();
   }
 
   async getPassword(username: string) {
@@ -144,5 +141,22 @@ export class UsersService {
   async remove(id: string) {
     const query: object = { _id: id };
     return await this.userModel.findByIdAndRemove(query).exec();
+  }
+
+  async getRanking() {
+    return await this.userModel
+      .find()
+      .select('-_id -password')
+      .sort({ score: 'desc' })
+      .limit(3)
+      .exec();
+  }
+
+  async getScoreboard() {
+    return await this.userModel
+      .find()
+      .select('-_id -password')
+      .sort({ score: 'desc' })
+      .exec();
   }
 }

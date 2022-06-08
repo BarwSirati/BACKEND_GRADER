@@ -13,6 +13,9 @@ export class Submit {
   questionId: string;
 
   @Prop({ required: true })
+  sourceCode: string;
+
+  @Prop({ required: true })
   status: boolean;
 
   @Prop({ required: true })

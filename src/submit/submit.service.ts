@@ -1,8 +1,6 @@
 import {
-  forwardRef,
   HttpException,
   HttpStatus,
-  Inject,
   Injectable,
   UseGuards,
 } from '@nestjs/common';
@@ -17,22 +15,10 @@ import { JwtGuard } from 'src/auth/guard/jwt.guard';
 @Injectable()
 export class SubmitService {
   constructor(
-    @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
     @InjectModel(Submit.name) private submitModel: Model<SubmitDoc>,
   ) {}
   async create(createSubmitDto: CreateSubmitDto): Promise<any> {
-    try {
-      const query = await this.findOne(
-        createSubmitDto.questionId,
-        createSubmitDto.userId,
-      );
-      if (query.status) {
-        return new HttpException('Success', HttpStatus.OK);
-      }
-    } catch (err) {
-      console.log(err);
-    }
     try {
       const createSubmit = await this.submitModel.create(createSubmitDto);
       if (await createSubmit.save()) {
@@ -62,7 +48,8 @@ export class SubmitService {
           userId: userId,
         })
         .sort({ $natural: -1 })
-        .limit(1);
+        .limit(1)
+        .exec();
       if (query) {
         return query;
       }

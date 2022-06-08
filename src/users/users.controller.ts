@@ -12,7 +12,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { JwtGuard } from 'src/auth/guard/jwt.guard';
 import { GetUser } from 'src/auth/decorator/get-user.decorator';
-// @UseGuards(JwtGuard)
+@UseGuards(JwtGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -30,6 +30,16 @@ export class UsersController {
   @Get('/current/info')
   async getCurrent(@GetUser() user: User) {
     return user;
+  }
+
+  @Get('/score/ranking')
+  async getRanking() {
+    return await this.usersService.getRanking();
+  }
+
+  @Get('/score/board')
+  async getScoreboard() {
+    return await this.usersService.getScoreboard();
   }
 
   @Patch(':id')
