@@ -1,11 +1,4 @@
-import {
-  MaxLength,
-  IsNotEmpty,
-  IsString,
-  IsNumber,
-  IsAlphanumeric,
-} from 'class-validator';
-import { isFloat64Array } from 'util/types';
+import { MaxLength, IsString, IsNumber, IsAlphanumeric } from 'class-validator';
 
 export class GetUserDto {
   @MaxLength(10)
