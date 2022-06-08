@@ -10,5 +10,6 @@ import { QuesSchema, Question } from './entities/question.entity';
   ],
   controllers: [QuestionController],
   providers: [QuestionService],
+  exports: [QuestionService],
 })
 export class QuestionModule {}

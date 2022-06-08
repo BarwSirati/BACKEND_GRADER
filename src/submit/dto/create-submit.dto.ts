@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsBoolean, IsString, IsNumber } from 'class-validator';
-export class CreateSubmittedDto {
+export class CreateSubmitDto {
   @IsNotEmpty()
   readonly userId: string;
 

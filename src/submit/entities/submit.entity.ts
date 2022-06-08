@@ -1,11 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export type SubmitDoc = Submitted & Document;
+export type SubmitDoc = Submit & Document;
 @Schema({
   timestamps: true,
 })
-export class Submitted {
+export class Submit {
   @Prop({ required: true })
   userId: string;
 
@@ -24,4 +24,4 @@ export class Submitted {
   @Prop()
   createdAt: Date;
 }
-export const SubmitSchema = SchemaFactory.createForClass(Submitted);
+export const SubmitSchema = SchemaFactory.createForClass(Submit);

@@ -1,28 +1,31 @@
 import {
+  forwardRef,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   UseGuards,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateSubmittedDto } from './dto/create-submitted.dto';
-import { SubmitDoc, Submitted } from './entities/submitted.entity';
+import { CreateSubmitDto } from './dto/create-submit.dto';
+import { SubmitDoc, Submit } from './entities/submit.entity';
 import { Model } from 'mongoose';
 import { UsersService } from 'src/users/users.service';
 import { JwtGuard } from 'src/auth/guard/jwt.guard';
 
 @UseGuards(JwtGuard)
 @Injectable()
-export class SubmittedService {
+export class SubmitService {
   constructor(
-    @InjectModel(Submitted.name) private submitModel: Model<SubmitDoc>,
+    @Inject(forwardRef(() => UsersService))
     private userService: UsersService,
+    @InjectModel(Submit.name) private submitModel: Model<SubmitDoc>,
   ) {}
-  async create(createSubmittedDto: CreateSubmittedDto): Promise<any> {
+  async create(createSubmitDto: CreateSubmitDto): Promise<any> {
     try {
       const query = await this.findOne(
-        createSubmittedDto.questionId,
-        createSubmittedDto.userId,
+        createSubmitDto.questionId,
+        createSubmitDto.userId,
       );
       if (query.status) {
         return new HttpException('Success', HttpStatus.OK);
@@ -31,14 +34,14 @@ export class SubmittedService {
       console.log(err);
     }
     try {
-      const createSubmitted = await this.submitModel.create(createSubmittedDto);
-      if (await createSubmitted.save()) {
-        if (createSubmitted.status) {
+      const createSubmit = await this.submitModel.create(createSubmitDto);
+      if (await createSubmit.save()) {
+        if (createSubmit.status) {
           const queryScore = await this.userService.getScore(
-            createSubmitted.userId,
+            createSubmit.userId,
           );
-          const newScore: number = queryScore.score + createSubmitted.score;
-          await this.userService.updateScore(createSubmitted.userId, newScore);
+          const newScore: number = queryScore.score + createSubmit.score;
+          await this.userService.updateScore(createSubmit.userId, newScore);
           return new HttpException('Success', HttpStatus.OK);
         }
       }
@@ -47,11 +50,10 @@ export class SubmittedService {
     }
   }
 
-  async findAll(): Promise<Submitted[]> {
+  async findAll(): Promise<Submit[]> {
     const query = await this.submitModel.find().exec();
     return query;
   }
-
   async findOne(questionId: string, userId: string): Promise<any> {
     try {
       const query = await this.submitModel
