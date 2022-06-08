@@ -20,6 +20,25 @@ export class SubmitService {
   ) {}
   async create(createSubmitDto: CreateSubmitDto): Promise<any> {
     try {
+      const query = await this.findOne(
+        createSubmitDto.questionId,
+        createSubmitDto.userId,
+      );
+      if (query.status) {
+        const id = { _id: query._id.toString() };
+        const userId = { _id: query.userId };
+        const updateSubmit = await this.submitModel
+          .findByIdAndUpdate(id, createSubmitDto)
+          .exec();
+        if (createSubmitDto.status == false) {
+          const updateFinished = await this.userService.updateFinished(userId);
+        }
+        return new HttpException('Success', HttpStatus.OK);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    try {
       const createSubmit = await this.submitModel.create(createSubmitDto);
       if (await createSubmit.save()) {
         if (createSubmit.status) {

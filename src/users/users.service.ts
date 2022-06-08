@@ -53,7 +53,7 @@ export class UsersService {
         return user;
       }
     } catch (err) {
-      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+      throw new HttpException('NOT FOUND', HttpStatus.NOT_FOUND);
     }
   }
 
@@ -97,6 +97,14 @@ export class UsersService {
     }
   }
 
+  async updateFinished(id: object) {
+    const userQuery = await this.userModel.findById(id).exec();
+    return await this.userModel
+      .findByIdAndUpdate(id, {
+        finished: userQuery.finished - 1,
+      })
+      .exec();
+  }
   async update(id: string, updateUserDto: UpdateUserDto) {
     try {
       if (await this.findOne(id)) {

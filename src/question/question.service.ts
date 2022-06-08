@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
@@ -18,12 +18,19 @@ export class QuestionService {
   }
 
   async findAll(): Promise<Question[]> {
-    return await this.quesModel.find().exec();
+    return await this.quesModel.find({ status: true }).exec();
   }
 
   async findOne(id: string) {
-    const query: object = { _id: new mongoose.Types.ObjectId(id) };
-    return await this.quesModel.find(query).exec();
+    try {
+      const query: object = {
+        _id: new mongoose.Types.ObjectId(id),
+        status: true,
+      };
+      return await this.quesModel.findOne(query).exec();
+    } catch (err) {
+      throw new HttpException('NOT FOUND', HttpStatus.NOT_FOUND);
+    }
   }
 
   async getQty(): Promise<number> {
