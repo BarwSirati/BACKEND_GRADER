@@ -28,5 +28,5 @@ export class GetUserDto {
   rank: number;
 
   @IsNumber()
-  progress: number;
+  progress: string;
 }

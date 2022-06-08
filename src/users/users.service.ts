@@ -1,11 +1,5 @@
 import { Model } from 'mongoose';
-import {
-  forwardRef,
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetUserDto } from './dto/get-user.dto';
@@ -13,11 +7,12 @@ import { User, UserDoc } from './entities/user.entity';
 import * as Bcrypt from 'bcryptjs';
 import { QuestionService } from 'src/question/question.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { Submit, SubmitDoc } from 'src/submit/entities/submit.entity';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name)
-    private userModel: Model<UserDoc>,
+    @InjectModel(User.name) private userModel: Model<UserDoc>,
+    @InjectModel(Submit.name) private submitModel: Model<SubmitDoc>,
     private questionService: QuestionService,
   ) {}
 
@@ -55,8 +50,8 @@ export class UsersService {
           score: fetch.score,
           group: fetch.group,
           finished: fetch.finished,
-          rank: 0,
-          progress: 0,
+          rank: await this.userRanking(id),
+          progress: await this.getProgress(id),
         };
         return user;
       }
@@ -75,14 +70,18 @@ export class UsersService {
     return await this.userModel.findOne(query).select('finished -_id').exec();
   }
 
-  async getProgress(id: string): Promise<number> {
-    const countQuestion = this.questionService.getQty(id);
-    const countPass = 0;
-    return countQuestion;
-    // if (countQuestion === 0 && countPass === 0) {
-    //   return Number(0).toFixed(2);
-    // }
-    // return ((Number(countPass) * 100) / Number(countQuestion)).toFixed(2);
+  async getProgress(userId: string): Promise<string> {
+    const countQuestion = await this.questionService.getQty();
+    const countPass = await this.submitModel
+      .findOne({
+        userId: userId,
+        status: true,
+      })
+      .count();
+    if (countQuestion === 0 && countPass === 0) {
+      return Number(0).toFixed(2);
+    }
+    return ((Number(countPass) * 100) / Number(countQuestion)).toFixed(2);
   }
 
   async updateScore(id: string, score: number) {
@@ -119,6 +118,27 @@ export class UsersService {
     } catch (err) {
       throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
     }
+  }
+
+  compareScore = (a, b) => {
+    if (a.score === b.score) {
+      return -1;
+    }
+    if (a.score < b.score) {
+      return 1;
+    }
+    return 0;
+  };
+
+  async userRanking(id: string): Promise<number> {
+    const users = await this.userModel
+      .find()
+      .select(['score', '_id', 'group'])
+      .sort({ score: 'desc' });
+    const allUser = users.filter((user) => user.group < 5);
+    const sortAllUser = allUser.sort(this.compareScore);
+    const rank = sortAllUser.findIndex((user) => String(user._id) === id);
+    return rank + 1;
   }
 
   async remove(id: string) {

@@ -26,9 +26,8 @@ export class QuestionService {
     return await this.quesModel.find(query).exec();
   }
 
-  async getQty(id: string): Promise<number> {
-    const query: object = { _id: new mongoose.Types.ObjectId(id) };
-    return await this.quesModel.findById(query).count();
+  async getQty(): Promise<number> {
+    return await this.quesModel.find().count();
   }
 
   async update(id: string, updateQuestionDto: UpdateQuestionDto) {
