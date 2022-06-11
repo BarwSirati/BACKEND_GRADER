@@ -26,7 +26,7 @@ export class AuthService {
       .exec();
     if (!user) throw new ForbiddenException();
 
-    const compare = new Promise(async (resolve, reject) => {
+    const compare = new Promise(async (resolve) => {
       Bcrypt.compare(createLoginDto.password, user.password).then((res) => {
         if (res) {
           resolve(true);
