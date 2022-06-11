@@ -97,10 +97,11 @@ export class UsersService {
     }
   }
 
-  async updateFinished(id: object) {
+  async updateFinished(id: object, score: number) {
     const userQuery = await this.userModel.findById(id).exec();
     return await this.userModel
       .findByIdAndUpdate(id, {
+        score: score,
         finished: userQuery.finished - 1,
       })
       .exec();

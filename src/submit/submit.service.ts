@@ -29,7 +29,8 @@ export class SubmitService {
         const userId = { _id: query.userId };
         await this.submitModel.findByIdAndUpdate(id, createSubmitDto).exec();
         if (createSubmitDto.status == false) {
-          await this.userService.updateFinished(userId);
+          const score: number = query.score;
+          await this.userService.updateFinished(userId, score);
         }
         return new HttpException('Success', HttpStatus.OK);
       }

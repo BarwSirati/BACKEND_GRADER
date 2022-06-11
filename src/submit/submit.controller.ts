@@ -3,7 +3,7 @@ import { SubmitService } from './submit.service';
 import { CreateSubmitDto } from './dto/create-submit.dto';
 import { JwtGuard } from 'src/auth/guard/jwt.guard';
 
-@UseGuards(JwtGuard)
+// @UseGuards(JwtGuard)
 @Controller('submit')
 export class SubmitController {
   constructor(private readonly submitService: SubmitService) {}
