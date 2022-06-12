@@ -8,21 +8,24 @@ import { JwtGuard } from 'src/auth/guard/jwt.guard';
 export class SubmitController {
   constructor(private readonly submitService: SubmitService) {}
 
+  @UseGuards(JwtGuard)
   @Post()
-  create(@Body() createSubmitDto: CreateSubmitDto) {
-    return this.submitService.create(createSubmitDto);
+  async create(@Body() createSubmitDto: CreateSubmitDto) {
+    return await this.submitService.create(createSubmitDto);
   }
 
-  @Get()
-  findAll() {
-    return this.submitService.findAll();
+  @UseGuards(JwtGuard)
+  @Get(':questionId')
+  async findAll(@Param('questionId') questionId: string) {
+    return await this.submitService.findAll(questionId);
   }
 
+  @UseGuards(JwtGuard)
   @Get(':questionId/:userId')
-  findOne(
+  async findOne(
     @Param('questionId') questionId: string,
     @Param('userId') userId: string,
   ) {
-    return this.submitService.findOne(questionId, userId);
+    return await this.submitService.findOne(questionId, userId);
   }
 }

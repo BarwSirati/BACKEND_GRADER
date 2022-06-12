@@ -1,17 +1,9 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  UseGuards,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateSubmitDto } from './dto/create-submit.dto';
 import { SubmitDoc, Submit } from './entities/submit.entity';
 import { Model } from 'mongoose';
 import { UsersService } from 'src/users/users.service';
-import { JwtGuard } from 'src/auth/guard/jwt.guard';
-
-@UseGuards(JwtGuard)
 @Injectable()
 export class SubmitService {
   constructor(
@@ -54,8 +46,12 @@ export class SubmitService {
     }
   }
 
-  async findAll(): Promise<Submit[]> {
-    const query = await this.submitModel.find().exec();
+  async findAll(questionId: string): Promise<Submit[]> {
+    const query = await this.submitModel
+      .find({ questionId: questionId })
+      .sort({ updatedAt: 'asc' })
+      .limit(5)
+      .exec();
     return query;
   }
   async findOne(questionId: string, userId: string): Promise<any> {
